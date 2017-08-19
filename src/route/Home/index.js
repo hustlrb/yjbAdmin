@@ -5,24 +5,20 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Button } from 'antd'
-import {requestPosition} from '../../actions/configActions'
-import {selectLocation} from '../../selector/configSelector'
+import {requestPosition} from './action'
+import {selectLocation, selectDomain} from './selector'
 
 class Home extends Component {
   constructor(props) {
     super(props)
   }
 
-  btnOnPress() {
-    this.props.requestPosition({})
-  }
-
   render() {
     return (
       <div>
-        主页面
+        主内容页面
         <div>
-          <Button type="primary" onClick={() => {this.btnOnPress()}}>获取地理位置</Button>
+          <Button type="primary" onClick={() => {this.props.requestPosition()}}>获取地理位置</Button>
         </div>
         <div>
           {this.props.location ? this.props.location.address : ""}
@@ -34,7 +30,8 @@ class Home extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    location: selectLocation(state)
+    location: selectLocation(state),
+    domain: selectDomain(state)
   }
 };
 

@@ -2,9 +2,9 @@ import { applyMiddleware, compose, createStore as createReduxStore } from 'redux
 import createSagaMiddleware, { END } from 'redux-saga'
 import {createLogger} from 'redux-logger'
 import { browserHistory } from 'react-router'
-import makeRootReducer from './reducers'
+import makeRootReducer from './reducer'
 import { updateLocation } from './location'
-import rootSaga from '../saga/rootSaga'
+import rootSaga from './saga'
 
 const createStore = (initialState = {}) => {
   // ======================================================
@@ -47,8 +47,8 @@ const createStore = (initialState = {}) => {
   store.close = () => store.dispatch(END)
 
   if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const reducers = require('./reducers').default
+    module.hot.accept('./reducer', () => {
+      const reducers = require('./reducer').default
       store.replaceReducer(reducers(store.asyncReducers))
     })
   }

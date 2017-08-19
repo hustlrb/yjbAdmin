@@ -3,8 +3,8 @@
  */
 import {Map, List} from 'immutable'
 import {REHYDRATE} from 'redux-persist/constants'
-import {ConfigRecord} from '../models/configModel'
-import * as configActionTypes from '../constants/configActionTypes'
+import {ConfigRecord} from './model'
+import * as configActionTypes from './constant'
 
 const initialState = ConfigRecord()
 

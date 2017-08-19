@@ -8,10 +8,11 @@ import {
   Col,
 } from 'antd'
 import {Link, IndexLink} from 'react-router'
+import SideMenu from '../../component/SiderMenu/index'
 
 const { Header, Footer, Sider, Content } = Layout
 
-export default class AppIndex extends Component {
+export default class MainFrame extends Component {
   constructor(props) {
     super(props)
   }
@@ -22,19 +23,24 @@ export default class AppIndex extends Component {
         <Header>
           <Row>
             <Col span={2}>
-              <IndexLink to="/">主页</IndexLink>
+              <IndexLink to="/">LOGO</IndexLink>
             </Col>
             <Col span={22}>
               <Link to="/about">关于我们</Link>
             </Col>
           </Row>
         </Header>
+
         <Layout>
-          <Sider>Sider</Sider>
+          <Sider>
+            <SideMenu/>
+          </Sider>
+
           <Content>
             {this.props.children}
           </Content>
         </Layout>
+
         <Footer>Footer</Footer>
       </Layout>
     )
