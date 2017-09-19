@@ -1,13 +1,22 @@
 import React from 'react';
 import {Col, Input, Button} from 'antd';
+import style from './UserFilter.module.scss';
 
 const UserFilter = (props) => {
   return (
-    <div style={{display: "flex", paddingBottom: "8px"}}>
-      <Col span="8" style={{display: "flex"}}><label style={{display: "inline-block", whiteSpace: "nowrap"}}>姓名</label><Input maxLength="25" /></Col>
-      <Col span="8" style={{display: "flex"}}><label style={{display: "inline-block", whiteSpace: "nowrap"}}>手机号码</label><Input /></Col>
-      <Button style={{marginLeft: "auto"}}>查询</Button>
-      <Button>重置</Button>
+    <div className={style.UserFilter}>
+      <div className={style.name}>
+        <label>姓名:</label><Input />
+      </div>
+      <div className={style.phoneNo}>
+        <label>手机号码:</label><Input />
+      </div>
+      <div className={style.buttonGroup}>
+        <Button.Group>
+          <Button>重置</Button>
+          <Button>查询</Button>
+        </Button.Group>
+      </div>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import {listUser} from './api';
 // --- State
 
 const UserState = Record({
-  users: null,
+  users: [],
 }, "UserState");
 
 // --- Selector
