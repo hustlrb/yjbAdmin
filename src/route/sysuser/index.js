@@ -4,7 +4,7 @@ import {Row, Col} from 'antd';
 import UserTabHeader from './UserTabHeader';
 import RoleTabHeader from './RoleTabHeader';
 import UserOp from './UserOp';
-import UserSearch from './UserSearch';
+import UserFilter from './UserFilter';
 import UserList from './UserList';
 import UserRole from './UserRole';
 import {dispatchListUser, selectUsers} from './redux';
@@ -37,7 +37,7 @@ class User extends React.Component {
           <Col lg={{span: 18}}>
             <div style={{display: "flex", flexFlow: "column"}}>
               <UserOp />
-              <UserSearch />
+              <UserFilter />
               <UserList users={this.props.users} />
             </div>
           </Col>
