@@ -146,9 +146,9 @@ class AuthState extends Record({
   activeUserId: undefined,      // current login user
   activeRoleIds: Set(),         // Set<role id>
   activePermissionIds: Set(),   // Set<permission id>
-  users: Map(),                 // Map<id, User>
-  roles: Map(),                 // Map<role id, Role>
-  permissions: Map(),           // Map<permission id, Permission>
+  usersById: Map(),             // Map<id, User>
+  rolesById: Map(),             // Map<role id, Role>
+  permissionsById: Map(),       // Map<permission id, Permission>
 
   allUsers: Set(),              // Set<user id>
   allAdminUsers: Set(),         // Set<user id>
@@ -417,7 +417,7 @@ function reduceLoginDone(state, action) {
   const immActiveUser = User.fromJson(jsonActiveUser).set('roles', immActiveRoleIds);
 
   // 'roles'
-  const immAllRoles = new Map().withMutations((m) => {
+  const immAllRolesById = new Map().withMutations((m) => {
     jsonAllRoles.forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.objectId, immRole);
@@ -425,7 +425,7 @@ function reduceLoginDone(state, action) {
   });
 
   // 'permissions'
-  const immAllPermissions = new Map().withMutations((m) => {
+  const immAllPermissionsById = new Map().withMutations((m) => {
     jsonAllPermissions.forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.objectId, immPermission);
@@ -435,7 +435,7 @@ function reduceLoginDone(state, action) {
   // 'activePermissionIds'
   const immActivePermissionIds = new Set().withMutations((m) => {
     immActiveRoleIds.forEach((i) => {
-      const immRole = immAllRoles.get(i);
+      const immRole = immAllRolesById.get(i);
       const immPermissionIds = immRole.get('permissions');
       m.union(immPermissionIds);
     });
@@ -446,9 +446,9 @@ function reduceLoginDone(state, action) {
     m.set('activeUserId', immActiveUser.objectId);
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.setIn(['users', immActiveUser.objectId], immActiveUser);
-    m.set('roles', immAllRoles);
-    m.set('permissions', immAllPermissions);
+    m.setIn(['usersById', immActiveUser.objectId], immActiveUser);
+    m.set('rolesById', immAllRolesById);
+    m.set('permissionsById', immAllPermissionsById);
   });
 }
 
@@ -458,7 +458,7 @@ function reduceLogoutDone(state, action) {
   return state.withMutations((m) => {
     m.set('activeUserId', undefined);
     m.set('token', undefined);
-    m.deleteIn(['users', activeUserId]);
+    m.deleteIn(['usersById', activeUserId]);
   });
 }
 
@@ -473,7 +473,7 @@ function reduceFetchUserListDone(state, action) {
 
   return state.withMutations((m) => {
     immUsers.forEach((i) => {
-      m.setIn(['users', i.objectId], i);
+      m.setIn(['usersById', i.objectId], i);
     });
   });
 }
@@ -485,28 +485,28 @@ function reduceRehydrate(state, action) {
     return state;
 
   // all data in json format
-  const {token, activeUserId, activeRoleIds, activePermissionIds, users, roles, permissions} = storage;
+  const {token, activeUserId, activeRoleIds, activePermissionIds, usersById, rolesById, permissionsById} = storage;
 
   const immActiveRoleIds = new Set(activeRoleIds);
   const immActivePermissionIds = new Set(activePermissionIds);
 
-  const immAllUsers = new Map().withMutations((m) => {
-    Object.values(users).forEach((i) => {
+  const immAllUsersById = new Map().withMutations((m) => {
+    Object.values(usersById).forEach((i) => {
       const immUser = User.fromJson(i);
       m.set(immUser.objectId, immUser);
     });
   });
 
-  const immAllRoles = new Map().withMutations((m) => {
-    Object.values(roles).forEach((i) => {
+  const immAllRolesById = new Map().withMutations((m) => {
+    Object.values(rolesById).forEach((i) => {
       const immRole = Role.fromJson(i);
       m.set(immRole.objectId, immRole);
     });
   });
 
   // 'permissions'
-  const immAllPermissions = new Map().withMutations((m) => {
-    Object.values(permissions).forEach((i) => {
+  const immAllPermissionsById = new Map().withMutations((m) => {
+    Object.values(permissionsById).forEach((i) => {
       const immPermission = Permission.fromJson(i);
       m.set(immPermission.objectId, immPermission);
     });
@@ -517,9 +517,9 @@ function reduceRehydrate(state, action) {
     // m.set('activeUserId', activeUserId);   // always re-auth with the server
     m.set('activeRoleIds', immActiveRoleIds);
     m.set('activePermissionIds', immActivePermissionIds);
-    m.set('users', immAllUsers);
-    m.set('roles', immAllRoles);
-    m.set('permissions', immAllPermissions);
+    m.set('usersById', immAllUsersById);
+    m.set('rolesById', immAllRolesById);
+    m.set('permissionsById', immAllPermissionsById);
   });
 }
 
@@ -566,7 +566,7 @@ function selectIsUserLoggedIn(appState) {
 function selectAllRoles(appState) {
   const allRoles = [];
 
-  const allImmRoles = appState.AUTH.getIn(['roles'], new Map()).toArray();
+  const allImmRoles = appState.AUTH.getIn(['rolesById'], new Map()).toArray();
   allImmRoles.forEach((i) => {
     allRoles.push(Role.toJson(i));
   });
@@ -577,7 +577,7 @@ function selectAllRoles(appState) {
 function selectAllUsers(appState) {
   const allUsers = [];
 
-  const allImmUsers = appState.AUTH.getIn(['users'], new Map()).toArray();
+  const allImmUsers = appState.AUTH.getIn(['usersById'], new Map()).toArray();
   allImmUsers.forEach((i) => {
     allUsers.push(User.toJson(i));
   });
@@ -599,7 +599,7 @@ function selectAdminUsers(appState) {
 }
 
 function selectUserById(appState, id) {
-  const immUser = appState.AUTH.getIn(['users', id], undefined);
+  const immUser = appState.AUTH.getIn(['usersById', id], undefined);
 
   if (immUser === undefined)
     return undefined;
