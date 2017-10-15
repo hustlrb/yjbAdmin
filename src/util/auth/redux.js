@@ -149,6 +149,10 @@ class AuthState extends Record({
   users: Map(),                 // Map<id, User>
   roles: Map(),                 // Map<role id, Role>
   permissions: Map(),           // Map<permission id, Permission>
+
+  allUsers: Set(),              // Set<user id>
+  allAdminUsers: Set(),         // Set<user id>
+  userIdsByRole: Map(),         // Map<role id, Set<user id>>
 }, 'AuthState') {
 
 }
@@ -174,6 +178,7 @@ export const action = {
   loginWithToken: createAction(LOGIN_WITH_TOKEN),
   logout: createAction(LOGOUT),
   fetchUserList: createAction(FETCH_USER_LIST),
+
   createUser: createAction(CREATE_USER),
   deleteUser: createAction(DELETE_USER),
   updateUser: createAction(UPDATE_USER),
